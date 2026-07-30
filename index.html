@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نظام متابعة العمليات الميدانية</title>
+<style>
+:root{
+  --navy:#071f3d; --navy2:#0b2f5a; --cream:#fff4d8; --cream2:#fffaf0;
+  --line:#29496a; --green:#27ae60; --red:#d9534f; --orange:#f39c12; --text:#ffffff;
+}
+*{box-sizing:border-box} body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#06182e,#08284b);color:#fff}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+aside{background:#04162b;border-left:1px solid #244b70;padding:18px;position:sticky;top:0;height:100vh}
+.brand{padding:8px 6px 22px;text-align:center}.brand h1{font-size:20px;margin:0 0 6px}.brand p{margin:0;color:#d6e3ef}
+nav button{width:100%;display:flex;align-items:center;gap:10px;background:#082746;color:#fff;border:1px solid #173d61;border-radius:12px;padding:13px;margin:8px 0;font-weight:700;cursor:pointer}
+nav button.active,nav button:hover{background:#0d4b87}.ico{color:var(--cream);font-size:20px;min-width:25px}
+main{padding:20px}.top{display:flex;justify-content:space-between;align-items:center;background:#0a2c53;border:1px solid #244b70;border-radius:16px;padding:18px;margin-bottom:18px}
+.top h2{margin:0}.muted{color:#cbd7e4;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.card{background:#0a294d;border:1px solid #315271;border-radius:16px;padding:16px}
+.stat{display:flex;align-items:center;gap:12px}.stat .icon{font-size:30px;color:var(--cream)}.num{font-size:28px;font-weight:900}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}.quick button{background:#0b315d;border:1px solid #3b5d7f;color:#fff;border-radius:16px;padding:20px 10px;cursor:pointer}
+.quick .big{font-size:32px;color:var(--cream);display:block;margin-bottom:10px}
+.section{display:none}.section.active{display:block}.panel{background:#082746;border:1px solid #2d5277;border-radius:16px;padding:16px;margin-top:16px}
+.row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.field{background:#0b315d;border:1px solid #3c5d7c;border-radius:12px;padding:12px}
+label{display:block;margin-bottom:6px;font-weight:700}input,select,textarea{width:100%;padding:11px;border-radius:10px;border:1px solid #cdbf9a;background:var(--cream2);color:#132a44;font-size:15px}
+table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border-bottom:1px solid #315271;padding:10px;text-align:center}th{background:#0d3d70}.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}.primary{background:#1b6eb0;color:#fff}.cream{background:var(--cream);color:#0a294d}.danger{background:#c0392b;color:#fff}.success{background:#218c4b;color:#fff}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.kpi{background:#0b315d;padding:16px;border-radius:14px;text-align:center}
+.badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:12px}.abs{background:#ffdddd;color:#9d1d1d}.pres{background:#dcf7e7;color:#146b39}
+@media(max-width:850px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.grid,.quick,.row,.kpis{grid-template-columns:1fr 1fr}nav{display:grid;grid-template-columns:1fr 1fr;gap:6px}nav button{margin:0}}
+@media(max-width:520px){.grid,.quick,.row,.kpis{grid-template-columns:1fr}main{padding:10px}.top{align-items:flex-start;gap:8px;flex-direction:column}}
+@media print{aside,.no-print{display:none!important}.app{display:block}body{background:#fff;color:#111}.panel,.card,.field{background:#fff;color:#111;border-color:#bbb}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <div class="brand"><h1>نظام متابعة العمليات الميدانية</h1><p>مجموعة الفصل والإعادة</p></div>
+  <nav>
+    <button class="active" data-target="home"><span class="ico">⌂</span>الرئيسية</button>
+    <button data-target="attendance"><span class="ico">👥</span>سجل الحضور اليومي</button>
+    <button data-target="daily"><span class="ico">📋</span>التقرير اليومي</button>
+    <button data-target="leave"><span class="ico">🌴</span>نظام إدارة الإجازات</button>
+    <button data-target="archive"><span class="ico">📁</span>الأرشيف والمستندات</button>
+    <button data-target="stats"><span class="ico">📊</span>لوحة الإحصائيات</button>
+    <button data-target="settings"><span class="ico">⚙</span>الإعدادات</button>
+  </nav>
+</aside>
+
+<main>
+<div class="top">
+  <div><h2 id="pageTitle">الرئيسية</h2><div class="muted">مرحبًا بك، المشرف الميداني</div></div>
+  <div class="muted" id="clock"></div>
+</div>
+
+<section id="home" class="section active">
+  <div class="grid">
+    <div class="card stat"><div class="icon">👥</div><div><div>إجمالي الموظفين</div><div class="num" id="empCount">32</div></div></div>
+    <div class="card stat"><div class="icon">🌴</div><div><div>إجمالي الإجازات</div><div class="num" id="leaveCount">0</div></div></div>
+    <div class="card stat"><div class="icon">📋</div><div><div>إجمالي المهام</div><div class="num" id="taskCount">0</div></div></div>
+    <div class="card stat"><div class="icon">📅</div><div><div>حضور اليوم</div><div class="num" id="presentCount">0</div></div></div>
+  </div>
+  <div class="panel">
+    <h3>الوصول السريع</h3>
+    <div class="quick">
+      <button onclick="go('attendance')"><span class="big">👥</span>سجل الحضور اليومي</button>
+      <button onclick="go('daily')"><span class="big">📋</span>التقرير اليومي</button>
+      <button onclick="go('leave')"><span class="big">🌴</span>إدارة الإجازات</button>
+      <button onclick="go('archive')"><span class="big">📁</span>الأرشيف والمستندات</button>
+    </div>
+  </div>
+</section>
+
+<section id="attendance" class="section">
+  <div class="panel">
+    <div class="row">
+      <div class="field"><label>المشرف الميداني</label><select id="attSup"></select></div>
+      <div class="field"><label>المجموعة</label><select id="attGroup"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+      <div class="field"><label>اليوم / التاريخ</label><input id="attDate" readonly></div>
+      <div class="field"><label>الشفت</label><select id="attShift"><option>ص</option><option>م</option></select></div>
+    </div>
+    <table>
+      <thead><tr><th>اسم الموظف</th><th>الحالة</th><th>تقرير مستقل</th></tr></thead>
+      <tbody id="attRows"></tbody>
+    </table>
+    <div class="actions no-print">
+      <button class="btn success" onclick="saveAttendance()">حفظ الحضور</button>
+      <button class="btn primary" onclick="window.print()">تصدير كشف الحضور PDF</button>
+      <button class="btn cream" onclick="renderAttendance()">إعادة تعيين</button>
+    </div>
+  </div>
+</section>
+
+<section id="daily" class="section">
+  <div class="panel">
+    <div class="row">
+      <div class="field"><label>المجموعة</label><select id="taskGroup"><option>A</option><option>B</option><option>C</option><option>D</option></select></div>
+      <div class="field"><label>المشرف الميداني</label><select id="taskSup"></select></div>
+      <div class="field"><label>نوع المهمة</label><select id="taskType"><option>إعادة فنية</option><option>إعادة HHU</option><option>إعادة طارئة</option><option>مهمة فصل</option><option>معاينة</option><option>أخرى</option></select></div>
+      <div class="field"><label>العدد</label><input id="taskQty" type="number" min="0" value="0"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="field"><label>اسم الفني</label><input id="techName"></div>
+      <div class="field"><label>الباركود</label><input id="barcode"></div>
+      <div class="field"><label>التاريخ</label><input id="taskDate" readonly></div>
+      <div class="field"><label>ملاحظات</label><input id="taskNote"></div>
+    </div>
+    <div class="actions"><button class="btn success" onclick="saveTask()">حفظ المهمة</button><button class="btn primary" onclick="window.print()">تصدير PDF</button></div>
+    <table><thead><tr><th>المجموعة</th><th>نوع المهمة</th><th>العدد</th><th>الفني</th><th>الباركود</th></tr></thead><tbody id="taskRows"></tbody></table>
+  </div>
+</section>
+
+<section id="leave" class="section">
+  <div class="panel">
+    <div class="row">
+      <div class="field"><label>اسم الموظف</label><input id="leaveName"></div>
+      <div class="field"><label>الشركة</label><select id="leaveCompany"><option>الجناحين</option><option>سيحان</option><option>الجدراوي</option></select></div>
+      <div class="field"><label>نوع الإجازة</label><select id="leaveType"><option>سنوية</option><option>مرضية</option><option>مرافقة</option><option>مولود</option><option>وفاة</option><option>تعويضية</option></select></div>
+      <div class="field"><label>المدة بالأيام</label><input id="leaveDays" type="number" min="1" value="1"></div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="field"><label>من</label><input id="leaveFrom" type="date"></div>
+      <div class="field"><label>إلى</label><input id="leaveTo" type="date"></div>
+      <div class="field"><label>ملاحظات</label><input id="leaveNote"></div>
+      <div class="field"><label>إجراء</label><button class="btn success" onclick="saveLeave()">حفظ الإجازة</button></div>
+    </div>
+    <table><thead><tr><th>الموظف</th><th>الشركة</th><th>النوع</th><th>المدة</th><th>الإجراء</th></tr></thead><tbody id="leaveRows"></tbody></table>
+  </div>
+</section>
+
+<section id="archive" class="section">
+  <div class="panel">
+    <div class="quick">
+      <button><span class="big">📢</span>التعاميم</button>
+      <button><span class="big">📄</span>المستندات</button>
+      <button><span class="big">🗂️</span>النماذج</button>
+      <button><span class="big">📝</span>المحاضر</button>
+    </div>
+    <div class="field" style="margin-top:16px"><label>إضافة مستند</label><input type="file" multiple></div>
+  </div>
+</section>
+
+<section id="stats" class="section">
+  <div class="panel">
+    <div class="kpis">
+      <div class="kpi"><div>الحضور المسجل</div><div class="num" id="sAtt">0</div></div>
+      <div class="kpi"><div>المهام المسجلة</div><div class="num" id="sTasks">0</div></div>
+      <div class="kpi"><div>الإجازات المسجلة</div><div class="num" id="sLeaves">0</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="settings" class="section">
+  <div class="panel">
+    <h3>إعدادات النظام</h3>
+    <div class="row">
+      <div class="field"><label>اسم المشرف الجديد</label><input id="newSup"></div>
+      <div class="field"><label>إضافة مشرف</label><button class="btn cream" onclick="addSupervisor()">إضافة</button></div>
+      <div class="field"><label>نسخة احتياطية</label><button class="btn primary" onclick="backup()">تنزيل البيانات</button></div>
+      <div class="field"><label>مسح البيانات المحلية</label><button class="btn danger" onclick="clearData()">مسح</button></div>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<script>
+const baseTeams={
+ A:["رمزي الخديدي","فيصل درهوم","إبراهيم غندل","عبدالرحمن الخديدي","عبدالعزيز الغامدي","عبدالوهاب الحارثي"],
+ B:["شجاع الحارثي","عبدالرحمن الحارثي","فيصل الحارثي","محمد السبيعي","وسيم السفياني","تركي الزهراني"],
+ C:["محمد حلبي","عوض اللهبي","عماد المالكي","سطام الفيفي","محمد الحارثي","عمران الصيني"],
+ D:["ياسر العامودي","سلطان العصيمي","يوسف الثبيتي","خالد العتيبي","عبدالمجيد القرشي","عبدالمجيد القثامي"]
+};
+let supervisors=JSON.parse(localStorage.getItem('supervisors')||'null')||["رمزي الخديدي","فيصل درهوم","شجاع الحارثي","عبدالرحمن الحارثي","محمد حلبي","عوض اللهبي","ياسر العامودي","سلطان العصيمي"];
+let tasks=JSON.parse(localStorage.getItem('tasks')||'[]');
+let leaves=JSON.parse(localStorage.getItem('leaves')||'[]');
+let attendance=JSON.parse(localStorage.getItem('attendance')||'[]');
+
+function nowText(){return new Date().toLocaleString('ar-SA-u-ca-gregory')}
+function fillSup(){[attSup,taskSup].forEach(s=>{s.innerHTML=supervisors.map(x=>`<option>${x}</option>`).join('')})}
+function renderAttendance(){
+ attDate.value=nowText(); attRows.innerHTML='';
+ baseTeams[attGroup.value].forEach((name,i)=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${name}</td><td><select class="attStatus" data-name="${name}" onchange="toggleAbsent(this,${i})"><option>اختر الحالة</option><option>حاضر</option><option>غائب</option><option>سنوية</option><option>مرضية</option><option>أخرى</option></select></td><td><button id="abs${i}" class="btn danger" style="display:none" onclick="absencePDF('${name}')">تقرير غياب PDF</button></td>`;
+  attRows.appendChild(tr)
+ })
+}
+function toggleAbsent(sel,i){document.getElementById('abs'+i).style.display=sel.value==='غائب'?'inline-block':'none'}
+function absencePDF(name){
+ const w=window.open('','_blank'); const d=attDate.value,s=attShift.value,sup=attSup.value;
+ w.document.write(`<html lang="ar" dir="rtl"><meta charset="utf-8"><style>body{font-family:Tahoma;padding:40px}h1{text-align:center;color:#0b2f5a}.box{border:2px solid #0b2f5a;border-radius:18px;padding:25px}.r{padding:12px;border-bottom:1px solid #ccc}.r:last-child{border:0}</style><div class="box"><h1>تقرير غياب موظف</h1><div class="r"><b>اسم الموظف:</b> ${name}</div><div class="r"><b>نوع الحالة:</b> غائب</div><div class="r"><b>التاريخ واليوم:</b> ${d}</div><div class="r"><b>الشفت:</b> ${s}</div><div class="r"><b>المشرف الميداني:</b> ${sup}</div></div><script>onload=()=>print()<\/script>`)
+ w.document.close()
+}
+function saveAttendance(){
+ const rec={date:attDate.value,group:attGroup.value,shift:attShift.value,supervisor:attSup.value,items:[...document.querySelectorAll('.attStatus')].map(x=>({name:x.dataset.name,status:x.value}))};
+ attendance.push(rec); localStorage.setItem('attendance',JSON.stringify(attendance)); alert('تم حفظ الحضور'); updateStats()
+}
+function saveTask(){
+ const t={group:taskGroup.value,supervisor:taskSup.value,type:taskType.value,qty:+taskQty.value,tech:techName.value,barcode:barcode.value,date:taskDate.value,note:taskNote.value};
+ tasks.push(t); localStorage.setItem('tasks',JSON.stringify(tasks)); renderTasks(); updateStats(); alert('تم حفظ المهمة')
+}
+function renderTasks(){taskRows.innerHTML=tasks.map(t=>`<tr><td>${t.group}</td><td>${t.type}</td><td>${t.qty}</td><td>${t.tech||'-'}</td><td>${t.barcode||'-'}</td></tr>`).join('')}
+function saveLeave(){
+ const l={name:leaveName.value,company:leaveCompany.value,type:leaveType.value,days:+leaveDays.value,from:leaveFrom.value,to:leaveTo.value,note:leaveNote.value};
+ leaves.push(l); localStorage.setItem('leaves',JSON.stringify(leaves)); renderLeaves(); updateStats(); alert('تم حفظ الإجازة')
+}
+function renderLeaves(){leaveRows.innerHTML=leaves.map((l,i)=>`<tr><td>${l.name}</td><td>${l.company}</td><td>${l.type}</td><td>${l.days} يوم</td><td><button class="btn cream" onclick="shareLeave(${i})">واتساب</button></td></tr>`).join('')}
+function shareLeave(i){const l=leaves[i],msg=`اسم الموظف: ${l.name}%0Aنوع الإجازة: ${l.type}%0Aمدة الإجازة: ${l.days} يوم%0Aالشركة: ${l.company}`;location.href='https://wa.me/?text='+msg}
+function updateStats(){
+ presentCount.textContent=attendance.reduce((n,r)=>n+r.items.filter(x=>x.status==='حاضر').length,0);
+ taskCount.textContent=tasks.reduce((n,t)=>n+t.qty,0); leaveCount.textContent=leaves.length;
+ sAtt.textContent=attendance.length; sTasks.textContent=tasks.length; sLeaves.textContent=leaves.length
+}
+function addSupervisor(){if(newSup.value.trim()){supervisors.push(newSup.value.trim());localStorage.setItem('supervisors',JSON.stringify(supervisors));fillSup();newSup.value='';alert('تمت الإضافة')}}
+function backup(){const blob=new Blob([JSON.stringify({attendance,tasks,leaves,supervisors},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='field-system-backup.json';a.click()}
+function clearData(){if(confirm('سيتم مسح البيانات المحلية. متابعة؟')){localStorage.clear();location.reload()}}
+function go(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.target===id));pageTitle.textContent=document.querySelector(`nav button[data-target="${id}"]`)?.innerText.trim()||'الرئيسية'}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.target));
+attGroup.onchange=renderAttendance;
+setInterval(()=>clock.textContent=nowText(),1000);
+taskDate.value=nowText(); fillSup(); renderAttendance(); renderTasks(); renderLeaves(); updateStats();
+</script>
+</body>
+</html>
