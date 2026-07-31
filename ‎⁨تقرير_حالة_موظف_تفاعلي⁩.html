@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تقرير حالة موظف</title>
+<style>
+:root{
+  --navy:#062b63; --blue:#0666c6; --cyan:#24aef3; --light:#e8f4ff;
+  --cream:#fffaf2; --line:#7bc4f4; --text:#082d67; --danger:#ef1f2f;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:Tahoma,Arial,sans-serif; background:#eef3f8; color:var(--text);
+}
+.page{
+  width:min(760px,100%); min-height:100vh; margin:auto; background:var(--cream);
+  box-shadow:0 0 28px rgba(0,0,0,.14);
+}
+.header{
+  background:linear-gradient(135deg,#03265b,#073b84); padding:28px 20px 24px;
+  text-align:center; color:#25aef3;
+}
+.logo-mark{font-size:54px;font-weight:800;line-height:.8;letter-spacing:-4px}
+.logo-ar{font-size:18px;font-weight:700;margin-top:7px}
+.content{padding:36px 28px 30px}
+h1{margin:0 0 30px;text-align:center;font-size:34px;color:var(--navy)}
+.grid{
+  display:grid; grid-template-columns:34% 66%; gap:8px;
+}
+.label,.field{
+  min-height:82px; border-radius:8px; display:flex; align-items:center;
+  padding:12px 18px; font-size:24px; font-weight:700;
+}
+.label{
+  background:linear-gradient(135deg,#0756b4,#0877d9); color:white; justify-content:center;
+}
+.field{border:2px solid var(--line); background:white}
+select,input{
+  width:100%; border:0; outline:0; background:transparent; color:var(--text);
+  font-size:22px; font-weight:700; text-align:center; font-family:inherit;
+}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+button{
+  border:0;border-radius:10px;padding:15px 22px;font-family:inherit;font-size:18px;
+  font-weight:700;cursor:pointer
+}
+.primary{background:linear-gradient(135deg,#23b8f3,#0698e4);color:white;flex:1}
+.secondary{background:#dfeefa;color:var(--navy)}
+.footer{height:86px;background:linear-gradient(135deg,#03265b,#073b84);margin-top:24px}
+.note{font-size:13px;color:#557;text-align:center;margin-top:14px}
+@media(max-width:560px){
+  .content{padding:28px 14px 24px} h1{font-size:28px}
+  .grid{grid-template-columns:38% 62%;gap:6px}
+  .label,.field{min-height:70px;font-size:18px;padding:10px}
+  select,input{font-size:17px}
+}
+@media print{
+  body{background:white}
+  .page{box-shadow:none;width:100%;min-height:auto}
+  .actions,.note{display:none!important}
+  .content{padding-bottom:10px}
+  @page{size:A4;margin:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="header">
+    <div class="logo-mark">⌁se</div>
+    <div class="logo-ar">السعودية للطاقة</div>
+  </header>
+
+  <main class="content">
+    <h1>تقرير حالة موظف</h1>
+
+    <div class="grid">
+      <div class="label">اسم الموظف</div>
+      <div class="field"><select id="employee"><option value="">اختر اسم الموظف</option><option>ياسر العمودي</option><option>محمد حلبي</option><option>شجاع الحارثي</option><option>رمزي الخديدي</option><option>عوض اللهبي</option><option>عبدالرحمن الحارثي</option><option>فيصل الحارثي</option><option>إبراهيم غندل</option><option>سطام الفيفي</option><option>عبدالرحمن الخديدي</option><option>وسيم السفياني</option><option>سلطان العصيمي</option><option>فيصل درهوم</option><option>يوسف الثبيتي</option><option>عماد المالكي</option><option>محمد السبيعي</option><option>خالد العتيبي</option><option>عبدالمجيد القرشي</option><option>محمد الحارثي</option><option>عبدالعزيز الغامدي</option><option>عمران الصيني</option><option>تركي الزهراني</option></select></div>
+
+      <div class="label">نوع الحالة</div>
+      <div class="field"><select id="status"><option value="">اختر الحالة</option><option>حاضر</option><option>غائب</option><option>سنوية</option><option>مرضية</option><option>مرافقة</option><option>مولود</option><option>وفاة</option><option>تعويضية</option><option>أخرى</option></select></div>
+
+      <div class="label">اليوم</div>
+      <div class="field"><input id="day" readonly></div>
+
+      <div class="label">التاريخ</div>
+      <div class="field"><input id="date" type="date"></div>
+
+      <div class="label">المشرف الميداني</div>
+      <div class="field"><select id="supervisor"><option value="">اختر المشرف الميداني</option><option>رمزي الخديدي</option><option>فيصل درهوم</option><option>شجاع الحارثي</option><option>عبدالرحمن الحارثي</option><option>محمد حلبي</option><option>عوض اللهبي</option><option>ياسر العمودي</option><option>سلطان العصيمي</option></select></div>
+    </div>
+
+    <div class="actions">
+      <button class="primary" onclick="exportPDF()">تصدير وإرسال PDF</button>
+      <button class="secondary" onclick="clearForm()">مسح النموذج</button>
+    </div>
+    <div class="note">بعد الضغط على التصدير اختر “حفظ في الملفات” أو “PDF” من شاشة الطباعة، ثم شاركه عبر واتساب.</div>
+  </main>
+  <div class="footer"></div>
+</div>
+
+<script>
+const dayNames = ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+function setToday(){
+  const d=new Date();
+  document.getElementById("day").value=dayNames[d.getDay()];
+  const yyyy=d.getFullYear(), mm=String(d.getMonth()+1).padStart(2,"0"), dd=String(d.getDate()).padStart(2,"0");
+  document.getElementById("date").value=`${yyyy}-${mm}-${dd}`;
+}
+function validate(){
+  const ids=["employee","status","date","supervisor"];
+  for(const id of ids){
+    const el=document.getElementById(id);
+    if(!el.value){ el.focus(); alert("فضلاً أكمل جميع الخانات قبل التصدير"); return false; }
+  }
+  return true;
+}
+function exportPDF(){
+  if(!validate()) return;
+  const emp=document.getElementById("employee").value;
+  const old=document.title;
+  document.title=`تقرير حالة - ${emp} - ${document.getElementById("date").value}`;
+  window.print();
+  setTimeout(()=>document.title=old,1000);
+}
+function clearForm(){
+  document.getElementById("employee").value="";
+  document.getElementById("status").value="";
+  document.getElementById("supervisor").value="";
+  setToday();
+}
+setToday();
+</script>
+</body>
+</html>
